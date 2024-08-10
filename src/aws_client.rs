@@ -10,5 +10,5 @@ pub async fn create_aws_client() -> sesv2::Client {
         .load()
         .await;
 
-    sesv2::Client::new(&config);
+    sesv2::Client::new(&config)
 }
