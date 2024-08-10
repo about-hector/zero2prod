@@ -26,10 +26,12 @@ impl Application {
             .sender()
             .expect("Invalid sender email address.");
 
-        let email_client =
-            EmailClient::new(sender_email).await;
+        let email_client = EmailClient::new(sender_email).await;
 
-        let address = format!("{}:{}", configuration.application.host, configuration.application.port);
+        let address = format!(
+            "{}:{}",
+            configuration.application.host, configuration.application.port
+        );
 
         let listener = TcpListener::bind(address)?;
         let port = listener.local_addr().unwrap().port();

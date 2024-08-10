@@ -5,7 +5,6 @@ async fn subscribe_returns_a_200_for_valid_form_data() {
     // run an instance of our app
     let app = spawn_app().await;
 
-
     // create a mock subscriber
     let body = "name=le%20guin&email=ursula_le_guin%40gmail.com";
     let response = app.post_subscriptions(body.into()).await;
@@ -69,4 +68,3 @@ async fn subscribe_returns_a_400_when_fields_are_present_but_invalid() {
         );
     }
 }
-

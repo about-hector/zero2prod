@@ -1,5 +1,8 @@
 use crate::domain::SubscriberEmail;
-use aws_sdk_sesv2::{types::{Body, Content, Destination, EmailContent, Message}, Client};
+use aws_sdk_sesv2::{
+    types::{Body, Content, Destination, EmailContent, Message},
+    Client,
+};
 
 #[derive(Clone)]
 pub struct EmailClient {
@@ -9,10 +12,9 @@ pub struct EmailClient {
 }
 
 impl EmailClient {
-
     pub async fn new(
         //base_url: String,
-        sender: SubscriberEmail
+        sender: SubscriberEmail,
     ) -> Self {
         let client = crate::aws_client::create_aws_client().await;
         Self {
@@ -23,12 +25,11 @@ impl EmailClient {
 
     pub async fn send_email(
         &self,
-        recipient: String,//SubscriberEmail,
+        recipient: String, //SubscriberEmail,
         subject: &str,
         //html_content: &str,
         text_content: &str,
     ) -> Result<(), String> {
-
         let mut dest: Destination = Destination::builder().build();
         dest.to_addresses = Some(vec![recipient]);
 
@@ -44,10 +45,7 @@ impl EmailClient {
             .build()
             .expect("Failed to build body content");
 
-
-        let body = Body::builder()
-            .text(body_content)
-            .build();
+        let body = Body::builder().text(body_content).build();
 
         let msg = Message::builder()
             .subject(subject_content)
