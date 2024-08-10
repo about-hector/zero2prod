@@ -20,7 +20,7 @@ jobs:
         run: docker build -t zero2prod .
 
       - name: Save Docker image
-           run: docker save zero2prod > zero2prod.tar
+        run: docker save zero2prod > zero2prod.tar
 
       - name: Setup SSH Config
         run: |
