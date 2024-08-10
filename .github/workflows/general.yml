@@ -6,6 +6,7 @@ env:
   CARGO_TERM_COLOR: always
   SQLX_VERSION: 0.7.1
   SQLX_FEATURES: "rustls,postgres"
+  HETZNER_SERVER_IP: ${{ secrets.HETZNER_SERVER_IP }}
 
 jobs:
   test:
@@ -148,3 +149,38 @@ jobs:
           #  - name: Generate code coverage
           #    run: |
           #      cargo tarpaulin --verbose --workspace --ignore-tests
+    deploy:
+    name: Deploy
+    needs: [test, fmt, clippy]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'  # Only deploy on push to main branch
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t zero2prod .
+
+      - name: Save Docker image
+        run: docker save zero2prod > zero2prod.tar
+
+      - name: Copy Docker image to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ env.HETZNER_SERVER_IP }}
+          username: root
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          source: "zero2prod.tar"
+          target: "/tmp"
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.HETZNER_SERVER_IP }}
+          username: root
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            docker load < /tmp/zero2prod.tar
+            docker stop zero2prod || true
+            docker rm zero2prod || true
+            docker run -d --name zero2prod -p 8000:8000 zero2prod
+            rm /tmp/zero2prod.tar
