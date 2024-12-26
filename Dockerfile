@@ -27,5 +27,5 @@ COPY configuration configuration
 ENV APP_ENVIRONMENT production
 EXPOSE 8000
 
-ENTRYPOINT ["./target/release/zero2prod"]
+ENTRYPOINT ["./zero2prod"]
 
